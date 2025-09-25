@@ -1,7 +1,7 @@
 
 import userModel, { userRoles } from '../../DB/models/user.model.js';
 import { sendEmail } from '../../service/sendEmail.js';
-import {Hash, Compare, verifyToken, generateToken, Encrypt, Decrypt} from '../../utils/index.js'
+import {Hash, Compare, verifyToken, generateToken, Encrypt, Decrypt, eventEmitter} from '../../utils/index.js'
 
 //=========sign up=============
 
@@ -20,21 +20,7 @@ export const signUp = async(req, res, next) =>{
     
     //generate confirm link
     // const token = jwt.sign({email}, process.env.SIGNATURE,{expiresIn: 60*3}) 
-    const token = await generateToken({
-      payload: {email},
-      SIGNATURE: process.env.SIGNATURE,
-      options: {expiresIn: 60*3}
-    })
-    const link = `http://localhost:3000/users/confirmEmail/${token}`
-
-    const isSend = await sendEmail({
-      to: email,
-      subject: "confirm email",
-      html: `<a> href =${link}> confirm email</a>`
-    })
-     if(isSend){
-         throw new Error(" failed to send email", {cause:400})
-     }
+    eventEmitter.emit("sendEmail", {email})
     const user = await userModel.create({
         name,
         email,
