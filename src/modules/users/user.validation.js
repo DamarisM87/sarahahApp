@@ -1,0 +1,19 @@
+import joi from "joi"
+import { generalRules } from "../../utils/generalRules/index.js";
+import { userGender } from "../../DB/models/user.model.js";
+
+
+export const signUpSchema = {
+    body: joi.object({
+        name: joi.string().length(5).required(),
+        email: generalRules.email.required(),
+        password: generalRules.password.required(),
+        cPassword: joi.string().valid(joi.ref("password")).required(),
+        age: joi.number().min(18).max(80).required(),
+        phone: joi.string().required(),
+        gender: joi.string().valid(userGender.male,userGender.female).required()
+
+    }).required(),
+
+    headers: generalRules.headers.required()
+}
