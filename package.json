@@ -1,0 +1,33 @@
+{
+  "name": "sarahahapp",
+  "version": "1.0.0",
+  "description": "a mini project mimicking the backend of the sarahah website",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DamarisM87/sarahahApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DamarisM87/sarahahApp/issues"
+  },
+  "homepage": "https://github.com/DamarisM87/sarahahApp#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "crypto-js": "^4.2.0",
+    "cryptojs": "^2.5.3",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "joi": "^18.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0",
+    "nodemailer": "^7.0.5"
+  }
+}
