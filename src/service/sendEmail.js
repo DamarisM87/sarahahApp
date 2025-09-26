@@ -12,7 +12,7 @@ export const sendEmail = async ({ to, subject, html, attachments = [] }) => {
   });
 
   const info = await transporter.sendMail({
-    from: `"Fuck You amigo" <${process.env.EMAIL_USER}>`,
+    from: `"Sarahah" <${process.env.EMAIL_USER}>`,
     to: to || "damarisflamingsword@gmail.com",
     subject: subject || "Hello ✔",
     html: html || "<b>Hello world?</b>",
