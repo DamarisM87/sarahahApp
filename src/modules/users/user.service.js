@@ -1,7 +1,8 @@
 
+import { nanoid } from 'nanoid';
 import userModel, { userRoles } from '../../DB/models/user.model.js';
-import { sendEmail } from '../../service/sendEmail.js';
 import {Hash, Compare, verifyToken, generateToken, Encrypt, Decrypt, eventEmitter} from '../../utils/index.js'
+import revokeTokenModel from '../../DB/models/revoke-token.model.js';
 
 //=========sign up=============
 
@@ -79,13 +80,13 @@ export const signIn = async(req, res, next) =>{
     const access_token = await generateToken({
       payload: {id: user._id, email},
       SIGNATURE: user.role == userRoles.user? process.env.ACCESS_TOKEN_USER: process.env.ACCESS_TOKEN_ADMIN,
-      options: {expiresIn: "1h"}
+      options: {expiresIn: "1h", jwtid: nanoid()}
     })
 
     const refresh_token = await generateToken({
       payload: {id: user._id, email},
       SIGNATURE: user.role == userRoles.user? process.env.REFRESH_TOKEN_USER : process.env.REFRESH_TOKEN_ADMIN,
-      options: {expiresIn: "1y"}
+      options: {expiresIn: "1y", jwtid: nanoid()}
     })
 
      return res.status(201).json({message: "successfully logged in", access_token, refresh_token})
@@ -105,3 +106,12 @@ export const getProfile = async (req, res, next) => {
     return res.status(200).json({ message: "success", user: req.user });
 };
 
+//======================= sign out ==========================
+export const signOut = async(req, res, next) =>{
+  const revokeToken = await revokeTokenModel.create({
+    tokenId: req.decoded.jwtid,
+    expireAt: req.decoded.exp
+  })
+  return res.status(200).json({message: " successfully logged out"})
+
+}
