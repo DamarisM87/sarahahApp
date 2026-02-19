@@ -107,11 +107,80 @@ export const getProfile = async (req, res, next) => {
 };
 
 //======================= sign out ==========================
+
 export const signOut = async(req, res, next) =>{
   const revokeToken = await revokeTokenModel.create({
     tokenId: req.decoded.jti,
     expireAt: req.decoded.exp
   })
   return res.status(200).json({message: " successfully logged out"})
+
+}
+
+//====================================== refresh token =============================
+
+ export const refreshToken = async(req, res, next) =>{
+ const {authorization} = req.headers
+ const [prefix,token] = authorization?.split(" ")
+      
+ if (!prefix || !token)
+      {
+        return res.status(401).json({ message: "Token missing" });
+      }
+
+      let signature = "";
+      if (prefix === "bearer") {
+        signature = process.env.REFRESH_TOKEN_USER;
+      } else if (prefix === "admin") {
+        signature = process.env.REFRESH_TOKEN_ADMIN;
+      } else {
+        return res.status(400).json({ message: "Invalid token prefix. Use 'Bearer' or 'Admin'." });
+      }
+
+      if (!signature) {
+        // helpful server-side error if env not loaded
+        return res.status(500).json({ message: "Server misconfiguration: missing token secret." });
+      }
+
+      // verifyToken should throw on invalid/expired token
+      const decoded = await verifyToken({ token, SIGNATURE: signature });
+      if (!decoded?.email) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+      }
+      // check if token was revoked
+      const revoke = await revokeTokenModel.findOne({ tokenId: decoded.jti });
+      if (revoke) {
+        return res.status(401).json({ message: "Token revoked. Please sign in again." });
+      }
+
+      const user = await userModel.findOne({email: decoded.email});
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      //create token
+    const access_token = await generateToken({
+      payload: {id: user._id, email},
+      SIGNATURE: user.role == userRoles.user? process.env.ACCESS_TOKEN_USER: process.env.ACCESS_TOKEN_ADMIN,
+      options: {expiresIn: "1h", jwtid:nanoid()}
+    })
+
+    const refresh_token = await generateToken({
+      payload: {id: user._id, email},
+      SIGNATURE: user.role == userRoles.user? process.env.REFRESH_TOKEN_USER : process.env.REFRESH_TOKEN_ADMIN,
+      options: {expiresIn: "1y", jwtid:nanoid()}
+    })
+return res.status(200).json({message: "successfully refreshed token", access_token, refresh_token})
+}
+
+
+//======================= update password ==========================
+
+export const updatePassword = async(req, res, next) =>{
+
+  const {oldPassword, newPassword, cNewPassword} = req.body
+ if(!Compare({plainText: oldPassword, cipherText: req.user.password})){
+  
+ }
 
 }
