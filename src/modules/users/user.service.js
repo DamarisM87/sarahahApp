@@ -159,17 +159,24 @@ export const signOut = async(req, res, next) =>{
       }
 
       //create token
-    const access_token = await generateToken({
-      payload: {id: user._id, email},
-      SIGNATURE: user.role == userRoles.user? process.env.ACCESS_TOKEN_USER: process.env.ACCESS_TOKEN_ADMIN,
-      options: {expiresIn: "1h", jwtid:nanoid()}
-    })
+   const access_token = await generateToken({
+  payload: { id: user._id, email: user.email },
+  SIGNATURE:
+    user.role == userRoles.user
+      ? process.env.ACCESS_TOKEN_USER
+      : process.env.ACCESS_TOKEN_ADMIN,
+  options: { expiresIn: "1h", jwtid: nanoid() },
+});
 
-    const refresh_token = await generateToken({
-      payload: {id: user._id, email},
-      SIGNATURE: user.role == userRoles.user? process.env.REFRESH_TOKEN_USER : process.env.REFRESH_TOKEN_ADMIN,
-      options: {expiresIn: "1y", jwtid:nanoid()}
-    })
+const refresh_token = await generateToken({
+  payload: { id: user._id, email: user.email },
+  SIGNATURE:
+    user.role == userRoles.user
+      ? process.env.REFRESH_TOKEN_USER
+      : process.env.REFRESH_TOKEN_ADMIN,
+  options: { expiresIn: "1y", jwtid: nanoid() },
+});
+
 return res.status(200).json({message: "successfully refreshed token", access_token, refresh_token})
 }
 
