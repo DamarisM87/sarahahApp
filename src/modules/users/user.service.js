@@ -185,9 +185,12 @@ return res.status(200).json({message: "successfully refreshed token", access_tok
 
 export const updatePassword = async(req, res, next) =>{
 
-  const {oldPassword, newPassword, cNewPassword} = req.body
- if(!Compare({plainText: oldPassword, cipherText: req.user.password})){
-  
+  const {oldPassword, newPassword} = req.body
+ if(!await Compare({plainText: oldPassword, cipherText: req.user.password})){
+  throw new Error("Invalid Password");
  }
-
+const hash = await Hash({plainText: newPassword})
+req.user.password = hash
+await req.user.save()
+return res.status(200).json({message: "password updated successfully", user: req.user})
 }
