@@ -30,8 +30,9 @@ export const signInSchema = {
 
 export const updatePasswordSchema = {
     body: joi.object({
-      password: generalRules.password.required(),
-    cPassword: joi.string().valid(joi.ref("password")).required(),
+      oldPassword: generalRules.password.required(),
+      newPassword: generalRules.password.required(),
+      cPassword: joi.string().valid(joi.ref("newPassword")).required(),
        
 
     }).required(),
