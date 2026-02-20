@@ -47,7 +47,7 @@
         return res.status(401).json({ message: "Token revoked. Please sign in again." });
       }
 
-      const user = await userModel.findById(decoded.id).lean();
+      const user = await userModel.findById(decoded.id)//.lean();
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
