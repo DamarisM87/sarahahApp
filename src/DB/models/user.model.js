@@ -46,6 +46,7 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(userRoles),
       default: userRoles.user,
     },
+    otp: String,
     confirmed: {
         type: Boolean,
         default: false
