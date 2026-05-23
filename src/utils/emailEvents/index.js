@@ -26,3 +26,19 @@ eventEmitter.on("sendEmail", async (data) => {
     throw new Error("Failed to send email", { cause: 400 });
   }
 });
+
+eventEmitter.on("forgetPassword", async (data) => {
+  const { email, otp } = data;
+
+  
+  const isSend = await sendEmail({
+    to: email,
+    subject: "Password Reset OTP",
+    html: `<p>Your OTP for password reset is: ${otp}</p>`,
+  });
+
+  if (!isSend) {
+    // only throw if sending failed
+    throw new Error("Failed to send email", { cause: 400 });
+  }
+});
