@@ -213,3 +213,27 @@ user.otp =await Hash({plainText: otp})
 await user.save()
 return res.status(200).json({message: "OTP sent successfully"})
 }
+
+//===================== reset password =========================
+export const resetPassword = async(req, res, next) =>{
+
+  const {email, otp, newPassword} = req.body
+
+  const user = await userModel.findOne({email, otp: {$exists: true}})
+  if(!user){
+    throw new Error("email not found", {cause: 404})
+  }
+
+if (!await Compare({plainText: otp, cipherText: user?.otp})){
+  throw new Error("Invalid OTP", {cause: 400})
+}
+
+const hash = await Hash({plainText: newPassword})
+await userModel.updateOne({email}, {
+  password: hash,
+  $unset: {otp: ""}
+
+})
+
+return res.status(200).json({message: "Password reset successfully"})
+}
