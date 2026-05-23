@@ -47,3 +47,11 @@ export const forgetPasswordSchema = {
 };
 
 
+export const resetPasswordSchema = {
+    body: joi.object({
+        email: generalRules.email.required(),
+        otp: joi.string().length(6).required(),
+        newPassword: generalRules.password.required(),
+        cPassword: joi.string().valid(joi.ref("newPassword")).required(),
+    }).required(),
+};
