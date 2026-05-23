@@ -40,4 +40,10 @@ export const updatePasswordSchema = {
    
 }
 
+export const forgetPasswordSchema = {
+    body: joi.object({
+        email: generalRules.email.required(),
+    }).required(),
+};
+
 
