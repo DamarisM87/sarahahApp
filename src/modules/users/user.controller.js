@@ -13,5 +13,6 @@ userRouter.post("/signout", authentication, US.signOut);
 userRouter.post("/refreshToken", US.refreshToken);
 userRouter.patch("/updatePassword", validation(UV.updatePasswordSchema), authentication,  US.updatePassword);
 userRouter.patch("/forgetPassword", validation(UV.forgetPasswordSchema), US.forgetPassword);
+userRouter.patch("/resetPassword", validation(UV.resetPasswordSchema), US.resetPassword);
 
 export default userRouter;
