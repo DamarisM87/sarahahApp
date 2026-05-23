@@ -1,5 +1,5 @@
 
-import { nanoid } from 'nanoid';
+import { nanoid, customAlphabet } from 'nanoid';
 import userModel, { userRoles } from '../../DB/models/user.model.js';
 import {Hash, Compare, verifyToken, generateToken, Encrypt, Decrypt, eventEmitter} from '../../utils/index.js'
 import revokeTokenModel from '../../DB/models/revoke-token.model.js';
@@ -193,4 +193,23 @@ const hash = await Hash({plainText: newPassword})
 req.user.password = hash
 await req.user.save()
 return res.status(200).json({message: "password updated successfully", user: req.user})
+}
+
+//===================== forget password =========================
+
+export const forgetPassword = async(req, res, next) =>{
+
+  const {email} = req.body
+  const user = await userModel.findOne({email})
+  if(!user){
+    throw new Error("email not found", {cause: 404})
+  }
+
+const otp = customAlphabet("1234567890", 6)()
+
+eventEmitter.emit("forgetPassword", {email, otp})
+
+user.otp =await Hash({plainText: otp})
+await user.save()
+return res.status(200).json({message: "OTP sent successfully"})
 }
